@@ -1,4 +1,4 @@
-package ro.pub.cs.systems.pdsd.lab07.earthquakeinformation.controller;
+package ro.pub.cs.systems.pdsd.lab07.earthquakelister.controller;
 
 import java.util.ArrayList;
 

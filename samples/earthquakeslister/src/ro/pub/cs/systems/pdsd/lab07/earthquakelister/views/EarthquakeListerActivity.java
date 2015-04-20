@@ -13,8 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ro.pub.cs.systems.pdsd.lab07.earthquakeinformation.controller.EarthquakeInformationAdapter;
 import ro.pub.cs.systems.pdsd.lab07.earthquakelister.R;
+import ro.pub.cs.systems.pdsd.lab07.earthquakelister.controller.EarthquakeInformationAdapter;
 import ro.pub.cs.systems.pdsd.lab07.earthquakelister.general.Constants;
 import ro.pub.cs.systems.pdsd.lab07.earthquakelister.model.EarthquakeInformation;
 import android.app.Activity;
