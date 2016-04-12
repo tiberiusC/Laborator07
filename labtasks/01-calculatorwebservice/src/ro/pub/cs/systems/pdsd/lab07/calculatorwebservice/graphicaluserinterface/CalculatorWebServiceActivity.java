@@ -1,6 +1,24 @@
 package ro.pub.cs.systems.pdsd.lab07.calculatorwebservice.graphicaluserinterface;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+
 import ro.pub.cs.systems.pdsd.lab07.calculatorwebservice.R;
+import ro.pub.cs.systems.pdsd.lab07.calculatorwebservice.general.Constants;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,12 +28,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CalculatorWebServiceActivity extends Activity {
 	
 	private EditText operator1EditText, operator2EditText;
 	private TextView resultTextView;
 	private Spinner operationsSpinner, methodsSpinner;
+	String content ;
 	
 	private class CalculatorWebServiceThread extends Thread {
 		
@@ -31,19 +51,87 @@ public class CalculatorWebServiceActivity extends Activity {
 			
 			// get method used for sending request from methodsSpinner
 			
-			// 1. GET
-			// a) build the URL into a HttpGet object (append the operators / operations to the Internet address)
-			// b) create an instance of a ResultHandler object
-			// c) execute the request, thus generating the result
 			
-			// 2. POST
-			// a) build the URL into a HttpPost object
-			// b) create a list of NameValuePair objects containing the attributes and their values (operators, operation)
-			// c) create an instance of a UrlEncodedFormEntity object using the list and UTF-8 encoding and attach it to the post request
-			// d) create an instance of a ResultHandler object
-			// e) execute the request, thus generating the result
+			Integer operator1 = Integer.parseInt(operator1EditText.getText().toString());
+			Integer operator2 = Integer.parseInt(operator2EditText.getText().toString());
+			
+			String operation = operationsSpinner.getSelectedItem().toString();
+			
+			HttpClient httpClient = new DefaultHttpClient();
+			String method = methodsSpinner.getSelectedItem().toString();
+			
+			String url = Constants.GET_WEB_SERVICE_ADDRESS
+                    + "?" + Constants.OPERATION_ATTRIBUTE + "=" + operation
+                    + "&" + Constants.OPERATOR1_ATTRIBUTE + "=" + operator1
+                    + "&" + Constants.OPERATOR2_ATTRIBUTE + "=" + operator2;
+			
+			if(method.equals("GET"))
+			{
+				// 1. GET
+				// a) build the URL into a HttpGet object (append the operators / operations to the Internet address)
+				// b) create an instance of a ResultHandler object
+				// c) execute the request, thus generating the result
+				
+				HttpGet httpGet = new HttpGet(url);
+				try {
+				
+					ResponseHandler<String> responseHandler = new BasicResponseHandler();
+					content = httpClient.execute(httpGet, responseHandler);
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+				
+					e.printStackTrace();
+				}
+			}
+			else if(method.equals("POST"))
+			{
+				// 2. POST
+				// a) build the URL into a HttpPost object
+				// b) create a list of NameValuePair objects containing the attributes and their values (operators, operation)
+				// c) create an instance of a UrlEncodedFormEntity object using the list and UTF-8 encoding and attach it to the post request
+				// d) create an instance of a ResultHandler object
+				// e) execute the request, thus generating the result
+				
+				HttpPost httpPost = new HttpPost(Constants.POST_WEB_SERVICE_ADDRESS);
+				List<NameValuePair> params = new ArrayList<NameValuePair>();        
+				params.add(new BasicNameValuePair(Constants.OPERATION_ATTRIBUTE, operationsSpinner.getSelectedItem().toString()));
+				params.add(new BasicNameValuePair(Constants.OPERATOR1_ATTRIBUTE, String.valueOf(operator1)));
+				params.add(new BasicNameValuePair(Constants.OPERATOR2_ATTRIBUTE, String.valueOf(operator2)));
+				
+				UrlEncodedFormEntity urlEncodedFormEntity;
+				try {
+					urlEncodedFormEntity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+					httpPost.setEntity(urlEncodedFormEntity);
+					ResponseHandler<String> responseHandler = new BasicResponseHandler();
+					try {
+						content = httpClient.execute(httpPost, responseHandler);
+					} catch (ClientProtocolException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+			}
 			
 			// display the result in resultTextView
+			resultTextView.post(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					resultTextView.setText(content);
+					
+				}
+			});
+					
 			
 		}
 	}
