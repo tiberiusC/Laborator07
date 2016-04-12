@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat.CarExtender;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -112,25 +113,26 @@ public class XkcdCartoonDisplayerActivity extends Activity {
 			Element divTagIdComic = htmlTag.getElementsByAttributeValue(Constants.ID_ATTRIBUTE, Constants.COMIC_VALUE).first();
 			String cartoonInternetAddress = divTagIdComic.getElementsByTag(Constants.IMG_TAG).attr(Constants.SRC_ATTRIBUTE);
 			
-			Log.d("TAG", cartoonInternetAddress);
-			//Toast.makeText(getApplicationContext(), cartoonInternetAddress, Toast.LENGTH_LONG).show();
-			Log.d("TAG", cartoonInternetAddress);
-			
 			try {
 				URL url = new URL("http:"+cartoonInternetAddress);
-				 HttpURLConnection connection = (HttpURLConnection) url
-			                .openConnection();
-			        connection.setDoInput(true);
-			        connection.connect();
-			        InputStream input = connection.getInputStream();
-			        myBitmap = BitmapFactory.decodeStream(input);
+				Log.d("TAG1", "http:"+cartoonInternetAddress);
+				 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			     connection.setDoInput(true);
+			     connection.connect();
+			     InputStream input = connection.getInputStream();
+			     myBitmap = BitmapFactory.decodeStream(input);
+			        
+			     if(myBitmap==null)
+			     {
+			    	 Log.d("TAG2", "este null");
+			     }
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			xkcdCartoonImageView.setImageBitmap(myBitmap);
+			//xkcdCartoonImageView.setImageBitmap(myBitmap);
 			
 			return xkcdCartoonInfo;
 
@@ -144,6 +146,9 @@ public class XkcdCartoonDisplayerActivity extends Activity {
 			// cartoonTitle -> xkcdCartoonTitleTextView
 			// cartoonContent -> xkcdCartoonImageView
 			// cartoonUrl -> xkcdCartoonUrlTextView
+			
+			xkcdCartoonTitleTextView.setText(xkcdCartoonInfo.getCartoonTitle());
+			xkcdCartoonUrlTextView.setText(xkcdCartoonInfo.getCartoonUrl());
 
 		}
 		
